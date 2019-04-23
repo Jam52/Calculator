@@ -33,7 +33,8 @@
         android:layout_marginRight="8dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/newNumber"
         app:layout_constraintEnd_toStartOf="@+id/newNumber"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="operation" />
 
     <EditText
         android:id="@+id/newNumber"
@@ -221,4 +222,26 @@
         android:text="Clear"
         app:layout_constraintEnd_toEndOf="@+id/buttonPlus"
         app:layout_constraintTop_toBottomOf="@+id/buttonPlus" />
+
+    <Button
+        android:id="@+id/buttonDel"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="DEL"
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonClear"
+        app:layout_constraintEnd_toStartOf="@+id/buttonClear" />
+
+    <Button
+        android:id="@+id/buttonNeg"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Neg"
+        app:layout_constraintBaseline_toBaselineOf="@+id/buttonDel"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDel"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/button0" />
 </android.support.constraint.ConstraintLayout>

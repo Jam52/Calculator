@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         Button buttonEquals = findViewById(R.id.buttonEquals);
         Button buttonDivide = findViewById(R.id.buttonDivide);
         Button buttonClear = findViewById(R.id.buttonClear);
-
+        Button buttonDel = findViewById(R.id.buttonDel);
+        Button buttonNeg = findViewById(R.id.buttonNeg);
 
         View.OnClickListener Listener = new View.OnClickListener() {
             @Override
@@ -123,7 +124,39 @@ public class MainActivity extends AppCompatActivity {
         buttonClear.setOnClickListener(clear);
 
 
+        View.OnClickListener delListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newNumber.setText("");
+
+            }
+        };
+
+        buttonDel.setOnClickListener(delListener);
+
+        View.OnClickListener negListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            if (newNumber.getText().toString().equals("")){
+                newNumber.setText("-");
+            } else {
+                String temp = newNumber.getText().toString();
+                newNumber.setText("-");
+                newNumber.append(temp);
+            }
+
+            }
+        };
+
+        buttonNeg.setOnClickListener(negListener);
+
+
+
     }
+
+
+
+
 
 
     @Override
