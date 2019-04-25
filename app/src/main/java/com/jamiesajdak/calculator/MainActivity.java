@@ -9,21 +9,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText result;
     private EditText newNumber;
-    private TextView operation;
 
-    //variables to hold operands and types of calculations
-    private Double operand1 = null;
-    private Double operand2 = null;
-    private String pendingOperation = "=";
 
-    //to hold pendingOperation on rotation
-    private static final String STATE_PENDOP = "PEND_OP";
-    private static final String STATE_OP1 = "OP1";
-
+    //to hold current calculation on rotation
+    private static final String STATE_CALCULATION = "CURRENT_CALCULATION";
     private static final String TAG = "MainActivity";
 
 
@@ -35,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         result = findViewById(R.id.result);
         newNumber = findViewById(R.id.newNumber);
-        operation = findViewById(R.id.operation);
 
         Button button0 = findViewById(R.id.button0);
         Button button1 = findViewById(R.id.button1);
@@ -64,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
 
                 Button b = (Button) v;
                 newNumber.append(b.getText().toString());
+                String value = newNumber.getText().toString();
+                try {
+                    Log.d(TAG, "onClick: attempting");
+                    result.setText(performOperation(value));
+                } catch (NumberFormatException e) {
+                    Log.d(TAG, "onClick: catch");
+                }
 
             }
         };
@@ -88,16 +89,16 @@ public class MainActivity extends AppCompatActivity {
 
                 Button b = (Button) v;
                 String op = b.getText().toString();
+                newNumber.append(op);
                 String value = newNumber.getText().toString();
                 try {
-                    Double dValue = Double.valueOf(value);
-                    performOperation(dValue, op);
+                    Log.d(TAG, "onClick: attempting");
+                    result.setText(performOperation(value));
                 } catch (NumberFormatException e) {
-                    newNumber.setText("");
+                    Log.d(TAG, "onClick: catch");
                 }
 
-                pendingOperation = op;
-                operation.setText(pendingOperation);
+
 
             }
         };
@@ -105,19 +106,23 @@ public class MainActivity extends AppCompatActivity {
         buttonDivide.setOnClickListener(operationListener);
         buttonMinus.setOnClickListener(operationListener);
         buttonMultiply.setOnClickListener(operationListener);
-        buttonEquals.setOnClickListener(operationListener);
         buttonPlus.setOnClickListener(operationListener);
+
+
+        buttonEquals.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newNumber.setText("");
+            }
+        });
 
 
         View.OnClickListener clear = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                operand1 = null;
-                operand2 = null;
-                pendingOperation = "=";
                 newNumber.setText("");
                 result.setText("");
-                operation.setText("");
+
             }
         };
 
@@ -134,38 +139,32 @@ public class MainActivity extends AppCompatActivity {
 
         buttonDel.setOnClickListener(delListener);
 
-        View.OnClickListener negListener = new View.OnClickListener() {
+
+
+        buttonNeg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (newNumber.getText().toString().equals("")){
+                if (newNumber.getText().toString().equals("")){
                 newNumber.setText("-");
-            } else {
+                } else {
                 String temp = newNumber.getText().toString();
                 newNumber.setText("-");
                 newNumber.append(temp);
-            }
+                }
 
             }
-        };
+        });
 
-        buttonNeg.setOnClickListener(negListener);
+
 
 
 
     }
 
-
-
-
-
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: in");
-        outState.putString(STATE_PENDOP, operation.getText().toString());
-        if(operand1 != null) {
-            outState.putDouble(STATE_OP1, operand1);
-        }
+        outState.putString(STATE_CALCULATION, newNumber.getText().toString());
         super.onSaveInstanceState(outState);
         Log.d(TAG, "onSaveInstanceState: out");
     }
@@ -175,46 +174,74 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onRestoreInstanceState: in");
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "onRestoreInstanceState: out");
-        pendingOperation = savedInstanceState.getString(STATE_PENDOP);
-        operand1 = savedInstanceState.getDouble(STATE_OP1);
-        operation.setText(pendingOperation);
+        newNumber.setText(savedInstanceState.getString(STATE_CALCULATION));
     }
 
 
-    private void performOperation(Double value, String op) {
-        if (operand1 != null) {
-            operand2 = value;
+    private static String performOperation(String input) {
+        StringBuilder tempNumber = new StringBuilder();
+        ArrayList<Object> allElements = new ArrayList<>();
 
-            if (pendingOperation.equals("=")) {
-                pendingOperation = op;
+        for(char element : input.toCharArray()) {
+            if(Character.isDigit(element) || String.valueOf(element).equals(".")) {
+                tempNumber.append(element);
+            } else {
+                allElements.add(tempNumber);
+                allElements.add(element);
+                tempNumber = new StringBuilder();
             }
-            switch (pendingOperation) {
-                case "=":
-                    operand1 = operand2;
-                    break;
-                case "/":
-                    if (operand2 == 0) {
-                        operand1 = 0.0;
-                    }
-                    operand1 /= operand2;
-                    break;
-                case "*":
-                    operand1 *= operand2;
-                    break;
-                case "+":
-                    operand1 += operand2;
-                    break;
-                case "-":
-                    operand1 -= operand2;
-                    break;
+        }
+        allElements.add(tempNumber);
+
+
+//
+//
+        for( int i = 0; i < allElements.size(); i++) {
+            if(allElements.get(i).toString().equals("/")) {
+                Double divideEquals = Double.valueOf(allElements.get(i-1).toString())/Double.valueOf(allElements.get(i+1).toString());
+                allElements.set(i, divideEquals);
+                allElements.remove(i+1);
+                allElements.remove(i-1);
             }
-        } else {
-            operand1 = value;
+        }
+        for( int i = 0; i < allElements.size(); i++) {
+            if(allElements.get(i).toString().equals("*")) {
+                Double multipyEquals = Double.valueOf(allElements.get(i-1).toString())*Double.valueOf(allElements.get(i+1).toString());
+                allElements.set(i, multipyEquals);
+                allElements.remove(i+1);
+                allElements.remove(i-1);
+            }
+        }
+        while(allElements.toString().contains("+")) {
+            for (int i = 0; i < allElements.size(); i++){
+                if(allElements.get(i).toString().equals("+")) {
+                    Double plusEquals = Double.valueOf(allElements.get(i-1).toString())+Double.valueOf(allElements.get(i+1).toString());
+                    allElements.remove(i+1);
+                    allElements.set(i, plusEquals);
+                    allElements.remove(i-1);
+
+                }
+            }
+        }
+
+        for(Object i : allElements){
+            System.out.println(i.toString());
         }
 
 
-        result.setText(operand1.toString());
-        newNumber.setText("");
+        while(allElements.size() > 1) {
+            for (int i = 0; i < allElements.size(); i++){
+                if(allElements.get(i).toString().equals("-")) {
+                    Double minusEquals = Double.valueOf(allElements.get(i-1).toString())-Double.valueOf(allElements.get(i+1).toString());
+                    allElements.remove(i+1);
+                    allElements.set(i, minusEquals);
+                    allElements.remove(i-1);
+
+                }
+            }
+        }
+
+        return allElements.get(0).toString();
 
     }
 
