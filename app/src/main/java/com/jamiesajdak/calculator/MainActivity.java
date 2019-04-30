@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         Button buttonDivide = findViewById(R.id.buttonDivide);
         Button buttonClear = findViewById(R.id.buttonClear);
         Button buttonDel = findViewById(R.id.buttonDel);
-        Button buttonNeg = findViewById(R.id.buttonNeg);
 
         View.OnClickListener Listener = new View.OnClickListener() {
             @Override
@@ -89,14 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
                 Button b = (Button) v;
                 String op = b.getText().toString();
-                newNumber.append(op);
-                String value = newNumber.getText().toString();
-                try {
-                    Log.d(TAG, "onClick: attempting");
-                    result.setText(performOperation(value));
-                } catch (NumberFormatException e) {
-                    Log.d(TAG, "onClick: catch");
+                if(newNumber.getText().toString().length() == 0 && result.getText().toString().length() !=0){
+                    newNumber.setText(result.getText());
                 }
+                newNumber.append(op);
 
 
 
@@ -132,29 +127,19 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener delListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newNumber.setText("");
+                StringBuilder deleteLast = new StringBuilder(newNumber.getText().toString());
+                deleteLast.deleteCharAt(deleteLast.length()-1);
+                newNumber.setText(deleteLast.toString());
+                try{
+                    performOperation(newNumber.getText().toString());
+                } catch(Exception e) {
+                    result.setText("");
+                }
 
             }
         };
 
         buttonDel.setOnClickListener(delListener);
-
-
-
-        buttonNeg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (newNumber.getText().toString().equals("")){
-                newNumber.setText("-");
-                } else {
-                String temp = newNumber.getText().toString();
-                newNumber.setText("-");
-                newNumber.append(temp);
-                }
-
-            }
-        });
-
 
 
 
@@ -182,8 +167,16 @@ public class MainActivity extends AppCompatActivity {
         StringBuilder tempNumber = new StringBuilder();
         ArrayList<Object> allElements = new ArrayList<>();
 
+
         for(char element : input.toCharArray()) {
-            if(Character.isDigit(element) || String.valueOf(element).equals(".")) {
+
+            if(String.valueOf(element).equals("-")){
+                if(tempNumber.length()!=0){
+                    allElements.add(tempNumber);
+                    tempNumber = new StringBuilder();
+                }
+                allElements.add(element);
+            }else if(Character.isDigit(element) || String.valueOf(element).equals(".")){
                 tempNumber.append(element);
             } else {
                 allElements.add(tempNumber);
@@ -194,61 +187,71 @@ public class MainActivity extends AppCompatActivity {
         allElements.add(tempNumber);
 
 
-//
-//
-        for( int i = 0; i < allElements.size(); i++) {
-            if(allElements.get(i).toString().equals("/")) {
-                Double divideEquals = Double.valueOf(allElements.get(i-1).toString())/Double.valueOf(allElements.get(i+1).toString());
-                allElements.set(i, divideEquals);
-                allElements.remove(i+1);
-                allElements.remove(i-1);
+        if (allElements.get(0).toString().equals("-")){
+            String minusNum = "-"+allElements.get(1).toString();
+            allElements.set(1, minusNum);
+            allElements.remove(0);
+        }
+
+
+
+        while(allElements.toString().contains("/"))
+            for( int i = 0; i < allElements.size(); i++) {
+                if(allElements.get(i).toString().equals("/")) {
+                    Double divideEquals = Double.valueOf(allElements.get(i-1).toString())/Double.valueOf(allElements.get(i+1).toString());
+                    allElements.set(i, divideEquals);
+                    allElements.remove(i+1);
+                    allElements.remove(i-1);
+                }
+            }
+        System.out.println(allElements.toString());
+
+        while(allElements.toString().contains("*")){
+            for(int i = 0; i < allElements.size(); i++) {
+                if(allElements.get(i).toString().equals("*")) {
+                    Double multipyEquals = Double.valueOf(allElements.get(i-1).toString())*Double.valueOf(allElements.get(i+1).toString());
+                    allElements.set(i, multipyEquals);
+                    allElements.remove(i+1);
+                    allElements.remove(i-1);
+                }
             }
         }
+
+        System.out.println(allElements.toString());
+
+
+
+
         for( int i = 0; i < allElements.size(); i++) {
-            if(allElements.get(i).toString().equals("*")) {
-                Double multipyEquals = Double.valueOf(allElements.get(i-1).toString())*Double.valueOf(allElements.get(i+1).toString());
-                allElements.set(i, multipyEquals);
-                allElements.remove(i+1);
-                allElements.remove(i-1);
+            if (allElements.get(i).toString().equals("-")) {
+                Double minusEquals = Double.valueOf(allElements.get(i - 1).toString()) - Double.valueOf(allElements.get(i + 1).toString());
+                allElements.set(i, minusEquals);
+                allElements.remove(i + 1);
+                allElements.remove(i - 1);
             }
         }
-        while(allElements.toString().contains("+")) {
-            for (int i = 0; i < allElements.size(); i++){
+
+
+        System.out.println(allElements.toString());
+
+
+        while(allElements.size()>1) {
+            for( int i = 0; i < allElements.size(); i++) {
                 if(allElements.get(i).toString().equals("+")) {
                     Double plusEquals = Double.valueOf(allElements.get(i-1).toString())+Double.valueOf(allElements.get(i+1).toString());
-                    allElements.remove(i+1);
                     allElements.set(i, plusEquals);
-                    allElements.remove(i-1);
-
-                }
-            }
-        }
-
-        for(Object i : allElements){
-            System.out.println(i.toString());
-        }
-
-
-        while(allElements.size() > 1) {
-            for (int i = 0; i < allElements.size(); i++){
-                if(allElements.get(i).toString().equals("-")) {
-                    Double minusEquals = Double.valueOf(allElements.get(i-1).toString())-Double.valueOf(allElements.get(i+1).toString());
                     allElements.remove(i+1);
-                    allElements.set(i, minusEquals);
                     allElements.remove(i-1);
-
                 }
             }
         }
+
 
         return allElements.get(0).toString();
 
     }
-
-
-
-
-
-
-
 }
+
+
+
+
