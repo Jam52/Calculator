@@ -88,10 +88,18 @@ public class MainActivity extends AppCompatActivity {
 
                 Button b = (Button) v;
                 String op = b.getText().toString();
+
                 if(newNumber.getText().toString().length() == 0 && result.getText().toString().length() !=0){
                     newNumber.setText(result.getText());
                 }
-                newNumber.append(op);
+
+                String lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
+                if (lastDidgit.equals("-") || lastDidgit.equals("+") || lastDidgit.equals("*") || lastDidgit.equals("/")) {
+                    Log.d(TAG, "onClick: duplicate op");
+                } else {
+                    newNumber.append(op);
+                }
+
 
 
 
@@ -128,12 +136,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 StringBuilder deleteLast = new StringBuilder(newNumber.getText().toString());
-                deleteLast.deleteCharAt(deleteLast.length()-1);
-                newNumber.setText(deleteLast.toString());
-                try{
-                    performOperation(newNumber.getText().toString());
-                } catch(Exception e) {
-                    result.setText("");
+                if(deleteLast.length()>0){
+                    deleteLast.deleteCharAt(deleteLast.length()-1);
+                    newNumber.setText(deleteLast.toString());
+                    try{
+                        result.setText(performOperation(newNumber.getText().toString()));
+                    } catch(Exception e) {
+                        result.setText("");
+                    }
                 }
 
             }
