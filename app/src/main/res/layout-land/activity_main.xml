@@ -10,14 +10,14 @@
     <EditText
         android:id="@+id/result"
         android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="@color/colorPrimaryDark"
+        android:layout_height="90dp"
+        android:background="@drawable/screenbackground2"
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="@font/aldrich"
         android:inputType="text"
-        android:padding="5dp"
+        android:padding="15dp"
         android:textColor="@color/white"
         android:textSize="36sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
@@ -27,17 +27,16 @@
     <EditText
         android:id="@+id/newNumber"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginRight="100dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@drawable/screenbackground2"
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="@font/aldrich"
         android:inputType="text"
-        android:padding="5dp"
+        android:padding="10dp"
+        android:paddingStart="15dp"
         android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
         app:layout_constraintStart_toStartOf="@+id/guideline14"
@@ -386,5 +385,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".48" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toStartOf="@+id/guideline15"
+        app:srcCompat="@drawable/sunthing2" />
 
 </android.support.constraint.ConstraintLayout>

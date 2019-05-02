@@ -1,6 +1,10 @@
 package com.jamiesajdak.calculator;
 
+import android.content.Context;
+import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     //to hold current calculation on rotation
     private static final String STATE_CALCULATION = "CURRENT_CALCULATION";
     private static final String TAG = "MainActivity";
+
 
 
 
@@ -86,21 +91,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 Button b = (Button) v;
                 String op = b.getText().toString();
 
-                if(newNumber.getText().toString().length() == 0 && result.getText().toString().length() !=0){
+                if(newNumber.getText().toString().length() == 0 && result.getText().toString().length() != 0){
                     newNumber.setText(result.getText());
                 }
 
-                String lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
-                if (lastDidgit.equals("-") || lastDidgit.equals("+") || lastDidgit.equals("*") || lastDidgit.equals("/")) {
-                    Log.d(TAG, "onClick: duplicate op");
+                String lastDidgit = " ";
+
+                if(newNumber.getText().toString().length()==0){
+                    if (op.equals("-")){
+                        newNumber.append(op);
+                    }
                 } else {
-                    newNumber.append(op);
+                    lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
+                    if (lastDidgit.equals("-") || lastDidgit.equals("+") || lastDidgit.equals("*") || lastDidgit.equals("/")) {
+                        Log.d(TAG, "onClick: duplicate op");
+                        } else {
+                            newNumber.append(op);
+                    }
                 }
-
-
 
 
             }
@@ -115,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
         buttonEquals.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 newNumber.setText("");
             }
         });
@@ -123,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener clear = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 newNumber.setText("");
                 result.setText("");
 
@@ -135,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener delListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 StringBuilder deleteLast = new StringBuilder(newNumber.getText().toString());
                 if(deleteLast.length()>0){
                     deleteLast.deleteCharAt(deleteLast.length()-1);

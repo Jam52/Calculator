@@ -12,13 +12,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@drawable/screenbackground2"
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="@font/aldrich"
         android:inputType="text"
-        android:padding="5dp"
+        android:padding="15dp"
         android:textColor="@color/white"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline7"
@@ -29,16 +29,21 @@
     <EditText
         android:id="@+id/newNumber"
         android:layout_width="0dp"
-        android:layout_height="44dp"
-        android:background="@color/colorPrimaryDark"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/screenbackground2"
         android:ems="10"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="@font/aldrich"
         android:inputType="text"
-        android:padding="5dp"
+        android:padding="10dp"
+        android:paddingStart="15dp"
         android:textColor="@color/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toTopOf="@+id/guideline7" />
@@ -343,7 +348,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".2" />
+        app:layout_constraintGuide_percent=".22" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline8"
@@ -386,5 +391,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent=".44" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline13"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:srcCompat="@drawable/sunthing2" />
 
 </android.support.constraint.ConstraintLayout>
