@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
                 Button b = (Button) v;
                 newNumber.append(b.getText().toString());
                 String value = newNumber.getText().toString();
+
+
                 try {
                     Log.d(TAG, "onClick: attempting");
                     result.setText(performOperation(value));
@@ -73,8 +75,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        View.OnClickListener zeroListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        button0.setOnClickListener(Listener);
+                Button b = (Button) v;
+
+                String currentNewText = newNumber.getText().toString();
+                String lastDigit = "";
+                if(currentNewText.length() >0){
+                    lastDigit = String.valueOf(currentNewText.charAt(currentNewText.length()-1));
+
+                }
+
+                if(currentNewText.equals("0") || currentNewText.equals("-0")){
+                    Log.d(TAG, "onClick: singleZero/minusZero");
+                } else if(lastDigit.equals("0") && !Character.isDigit(currentNewText.charAt(currentNewText.length()-2))){
+                    Log.d(TAG, "onClick: zero after operand");
+                    if(String.valueOf(currentNewText.charAt(currentNewText.length()-2)).equals(".")){
+                        newNumber.append(b.getText().toString());
+                    }
+                } else {
+                    newNumber.append(b.getText().toString());
+                }
+
+            }
+        };
+
+
+        button0.setOnClickListener(zeroListener);
         button1.setOnClickListener(Listener);
         button2.setOnClickListener(Listener);
         button3.setOnClickListener(Listener);
@@ -220,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
         while(allElements.toString().contains("/"))
             for( int i = 0; i < allElements.size(); i++) {
                 if(allElements.get(i).toString().equals("/")) {
@@ -230,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                     allElements.remove(i-1);
                 }
             }
-        System.out.println(allElements.toString());
+
 
         while(allElements.toString().contains("*")){
             for(int i = 0; i < allElements.size(); i++) {
@@ -243,10 +271,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        System.out.println(allElements.toString());
-
-
-
 
         for( int i = 0; i < allElements.size(); i++) {
             if (allElements.get(i).toString().equals("-")) {
@@ -256,9 +280,6 @@ public class MainActivity extends AppCompatActivity {
                 allElements.remove(i - 1);
             }
         }
-
-
-        System.out.println(allElements.toString());
 
 
         while(allElements.size()>1) {
@@ -272,8 +293,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        String finalString = allElements.get(0).toString();
+        String lastTwoDigits = "";
+        if(finalString.length() >= 2) {
+            lastTwoDigits = finalString.substring(finalString.length()-2);
+        }
 
-        return allElements.get(0).toString();
+
+        if(lastTwoDigits.equals(".0")){
+            return finalString.substring(0,finalString.length()-2);
+
+        } else {
+            return finalString;
+        }
+
 
     }
 }
