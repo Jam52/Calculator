@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,138 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText result;
     private EditText newNumber;
 
-    private static String performOperation(String input) {
-        StringBuilder tempNumber = new StringBuilder();
-        ArrayList<Object> allElements = new ArrayList<>();
-
-
-        for (char element : input.toCharArray()) {
-
-            if(String.valueOf(element).equals("-")){
-                if(tempNumber.length()!=0){
-                    allElements.add(tempNumber);
-                    tempNumber = new StringBuilder();
-                }
-                allElements.add(element);
-            }else
-            if (Character.isDigit(element) || String.valueOf(element).equals(".")) {
-                tempNumber.append(element);
-            } else {
-                allElements.add(tempNumber);
-                allElements.add(element);
-                tempNumber = new StringBuilder();
-            }
-        }
-        allElements.add(tempNumber);
-
-// if "-" first change to "-digit"
-        if(allElements.get(0).toString().equals("-")){
-            String addedMinus = "-"+allElements.get(1);
-            allElements.set(0, addedMinus);
-            allElements.remove(1);
-        }
-
-
-// changing "-"digits after operands into "-digit"
-        for(int i=0; i < allElements.size(); i++) {
-            String element = allElements.get(i).toString();
-            if (element.equals("/")||element.equals("*")||element.equals("+")) {
-                if(allElements.get(i+1).toString().equals("-")){
-                    String addedMinus = "-"+allElements.get(i+2);
-                    allElements.set(i+1, addedMinus);
-                    allElements.remove(i+2);
-                }
-            }
-        }
-
-        System.out.println(allElements.toString());
-
-
-
-
-        for (int i = 0; i < allElements.size(); i++) {
-            String currentObj = allElements.get(i).toString();
-            if (currentObj.equals("*") || currentObj.equals("/") || currentObj.equals("+") || currentObj.equals("-")) {
-                if (allElements.get(i + 1).toString().equals("-")) {
-                    String tempNum = "-" + (allElements.get(i + 2).toString());
-                    allElements.set(i + 2, tempNum);
-                    allElements.remove(i + 1);
-                }
-            }
-        }
-
-        System.out.println(allElements.toString());
-
-
-
-        while (allElements.toString().contains("/"))
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("/")) {
-                    Double divideEquals = Double.valueOf(allElements.get(i - 1).toString()) / Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, divideEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-
-
-
-
-        while (allElements.toString().contains("*")) {
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("*")) {
-                    Double multipyEquals = Double.valueOf(allElements.get(i - 1).toString()) * Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, multipyEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-        }
-
-        System.out.println(allElements);
-
-        boolean minusTest = true;
-
-        while(minusTest){
-            minusTest = false;
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("-")) {
-                    Double minusEquals = Double.valueOf(allElements.get(i - 1).toString()) - Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, minusEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                    minusTest = true;
-                }
-            }
-        }
-
-
-        while (allElements.size() > 1) {
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("+")) {
-                    Double plusEquals = Double.valueOf(allElements.get(i - 1).toString()) + Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, plusEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-        }
-
-
-        String finalString = allElements.get(0).toString();
-        String lastTwoDigits = "";
-        if (finalString.length() >= 2) {
-            lastTwoDigits = finalString.substring(finalString.length() - 2);
-        }
-
-
-        if (lastTwoDigits.equals(".0")) {
-            return finalString.substring(0, finalString.length() - 2);
-
-        } else {
-            return finalString;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,14 +154,14 @@ public class MainActivity extends AppCompatActivity {
                     newNumber.setText(result.getText());
                 }
 
-                String lastDidgit = " ";
+
 
                 if(newNumber.getText().toString().length()==0){
                     if (op.equals("-")){
                         newNumber.append(op);
                     }
                 } else {
-                    lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
+                    String lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
                     if (lastDidgit.equals("-") || lastDidgit.equals("+") || lastDidgit.equals("*") || lastDidgit.equals("/")) {
                         Log.d(TAG, "onClick: duplicate op");
                         if(op.equals("-")&& !lastDidgit.equals("-")){
@@ -377,6 +246,157 @@ public class MainActivity extends AppCompatActivity {
         newNumber.setText(savedInstanceState.getString(STATE_CALCULATION));
     }
 
+
+    private static String performOperation(String input) {
+        StringBuilder tempNumber = new StringBuilder();
+        ArrayList<Object> allElements = new ArrayList<>();
+
+
+        for (char element : input.toCharArray()) {
+
+            if(String.valueOf(element).equals("-")){
+                if(tempNumber.length()!=0){
+                    allElements.add(tempNumber);
+                    tempNumber = new StringBuilder();
+                }
+                allElements.add(element);
+            }else
+            if (Character.isDigit(element) || String.valueOf(element).equals(".")) {
+                tempNumber.append(element);
+            } else {
+                allElements.add(tempNumber);
+                allElements.add(element);
+                tempNumber = new StringBuilder();
+            }
+        }
+        allElements.add(tempNumber);
+
+// if "-" first change to "-digit"
+        if(allElements.get(0).toString().equals("-")){
+            String addedMinus = "-"+allElements.get(1);
+            allElements.set(0, addedMinus);
+            allElements.remove(1);
+        }
+
+
+// changing "-"digits after operands into "-digit"
+        for(int i=0; i < allElements.size(); i++) {
+            String element = allElements.get(i).toString();
+            if (element.equals("/")||element.equals("*")||element.equals("+")) {
+                if(allElements.get(i+1).toString().equals("-")){
+                    String addedMinus = "-"+allElements.get(i+2);
+                    allElements.set(i+1, addedMinus);
+                    allElements.remove(i+2);
+                }
+            }
+        }
+
+        System.out.println(allElements.toString());
+
+
+
+
+        for (int i = 0; i < allElements.size(); i++) {
+            String currentObj = allElements.get(i).toString();
+            if (currentObj.equals("*") || currentObj.equals("/") || currentObj.equals("+") || currentObj.equals("-")) {
+                if (allElements.get(i + 1).toString().equals("-")) {
+                    String tempNum = "-" + (allElements.get(i + 2).toString());
+                    allElements.set(i + 2, tempNum);
+                    allElements.remove(i + 1);
+                }
+            }
+        }
+
+        System.out.println(allElements.toString());
+
+
+
+        while (allElements.toString().contains("/")){
+            for (int i = 0; i < allElements.size(); i++) {
+                if (allElements.get(i).toString().equals("/")) {
+                    Double divideEquals = Double.valueOf(allElements.get(i - 1).toString()) / Double.valueOf(allElements.get(i + 1).toString());
+                    allElements.set(i, divideEquals);
+                    allElements.remove(i + 1);
+                    allElements.remove(i - 1);
+                }
+            }
+
+        }
+
+
+
+
+        while (allElements.toString().contains("*")) {
+            for (int i = 0; i < allElements.size(); i++) {
+                if (allElements.get(i).toString().equals("*")) {
+                    BigDecimal numOne = new BigDecimal(allElements.get(i-1).toString());
+                    BigDecimal numTwo = new BigDecimal(allElements.get(i+1).toString());
+                    BigDecimal multipyEquals = numOne.multiply(numTwo);
+                    allElements.set(i, multipyEquals);
+                    allElements.remove(i + 1);
+                    allElements.remove(i - 1);
+                }
+            }
+        }
+
+
+        boolean minusTest = true;
+
+        while(minusTest){
+            minusTest = false;
+            for (int i = 0; i < allElements.size(); i++) {
+                if (allElements.get(i).toString().equals("-")) {
+                    Double minusEquals = Double.valueOf(allElements.get(i - 1).toString()) - Double.valueOf(allElements.get(i + 1).toString());
+                    allElements.set(i, minusEquals);
+                    allElements.remove(i + 1);
+                    allElements.remove(i - 1);
+                    minusTest = true;
+                }
+            }
+        }
+
+
+
+
+        while (allElements.size() > 1) {
+            for (int i = 0; i < allElements.size(); i++) {
+                if (allElements.get(i).toString().equals("+")) {
+                    Double plusEquals = Double.valueOf(allElements.get(i - 1).toString()) + Double.valueOf(allElements.get(i + 1).toString());
+                    allElements.set(i, plusEquals);
+                    allElements.remove(i + 1);
+                    allElements.remove(i - 1);
+                }
+            }
+        }
+
+
+        String finalString = allElements.get(0).toString();
+
+        if(finalString.length() >0){
+            for (int i = finalString.length()-1; i >=0; i--) {
+                if(String.valueOf(finalString.charAt(i)).equals("0") || String.valueOf(finalString.charAt(i)).equals(".")){
+                    Log.d(TAG, "performOperation: checking last digit");
+                } else {
+                    finalString = finalString.substring(0,i+1);
+                    break;
+                }
+
+            }
+        }
+
+        return finalString;
+
+
+
+//        if (lastTwoDigits.equals(".0")) {
+//            return finalString.substring(0, finalString.length() - 2);
+//
+//        } else {
+//            return finalString;
+//        }
+    }
+
+
     private String findLastNumber(String number) {
 
         StringBuilder lastNumber = new StringBuilder();
@@ -386,7 +406,10 @@ public class MainActivity extends AppCompatActivity {
                 lastNumber.append(number.charAt(i));
                 Log.d(TAG, "findLastNumber: checking " + i + " " + lastNumber);
 
+            } else {
+                break;
             }
+
 
         }
         return lastNumber.toString();
