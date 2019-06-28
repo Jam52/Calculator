@@ -372,10 +372,13 @@ public class MainActivity extends AppCompatActivity {
 
         String finalString = allElements.get(0).toString();
 
-        if(finalString.length() >0){
+        if(finalString.length() >0 && finalString.contains(".")){
             for (int i = finalString.length()-1; i >=0; i--) {
-                if(String.valueOf(finalString.charAt(i)).equals("0") || String.valueOf(finalString.charAt(i)).equals(".")){
+                if(String.valueOf(finalString.charAt(i)).equals("0")){
                     Log.d(TAG, "performOperation: checking last digit");
+                } else if(String.valueOf(finalString.charAt(i)).equals(".")){
+                    finalString = finalString.substring(0,i);
+                    break;
                 } else {
                     finalString = finalString.substring(0,i+1);
                     break;
