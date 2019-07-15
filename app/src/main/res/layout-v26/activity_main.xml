@@ -7,6 +7,34 @@
     android:background="@mipmap/background"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/buttonRbracket"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grey_button"
+        android:text=")"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/guideline9" />
+
+    <Button
+        android:id="@+id/buttonLbracket"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grey_button"
+        android:text="("
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline8"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:layout_constraintVertical_bias="1.0" />
+
     <EditText
         android:id="@+id/result"
         android:layout_width="0dp"

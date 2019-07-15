@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,11 +25,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private EditText result;
     private EditText newNumber;
+    private static final int VIBE_LENGTH = 10;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         result = findViewById(R.id.result);
@@ -51,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
         Button buttonDivide = findViewById(R.id.buttonDivide);
         Button buttonClear = findViewById(R.id.buttonClear);
         Button buttonDel = findViewById(R.id.buttonDel);
+        Button buttonLbracket = findViewById(R.id.buttonLbracket);
+        Button buttonRbracket = findViewById(R.id.buttonRbracket);
+
 
         View.OnClickListener Listener = new View.OnClickListener() {
             @Override
@@ -58,78 +65,42 @@ public class MainActivity extends AppCompatActivity {
 
 
                 Button b = (Button) v;
-                String lastDigit = "";
-                String lastNumber = "";
+                String calculation = "";
 
-                if (newNumber.getText().length() > 0) {
-                    lastNumber = findLastNumber(newNumber.getText().toString());
-                    Log.d(TAG, "onClick: checking '.' "+ lastNumber);
-                }
-//                try{
-//                    lastDigit = newNumber.getText().toString().substring(newNumber.getText().toString().length()-1);
-//                } catch(Exception e) {
-//                    Log.d(TAG, "onClick: som,thing");
-//                }
-
-
-                if(lastNumber.contains(".") && b.getText().toString().equals(".")){
-                    Log.d(TAG, "onClick: duplicate .");
+                if(Arrays.asList("1","2","3","4","5","6","7","8","9","0",".","(",")").contains(b.getText().toString())){
+                    b.setBackgroundResource(R.drawable.pressed);
                 } else {
-                    newNumber.append(b.getText().toString());
-                    String value = newNumber.getText().toString();
-                    try {
+                    b.setBackgroundResource(R.drawable.pressed_white);
+                }
 
-                        Log.d(TAG, "onClick: attempting");
-                        result.setText(performOperation(value));
-                    } catch (NumberFormatException e) {
-                        Log.d(TAG, "onClick: catch");
-                    }
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(VIBE_LENGTH);
 
+
+                if(newNumber.getText().toString().length() > 0){
+                    calculation = newNumber.getText().toString();
+                    Log.d(TAG, "onClick: setting current calculation");
                 }
 
 
 
-            }
-        };
+                Boolean inputCheck = new testInput(b.getText().toString(), calculation).getInputCheck();
+                Log.d(TAG, "onClick: checking input: "+ b.getText().toString() + ":" + inputCheck);
 
-        View.OnClickListener zeroListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Button b = (Button) v;
-
-                String currentNewText = newNumber.getText().toString();
-                String lastDigit = "";
-                if(currentNewText.length() >0){
-                    lastDigit = String.valueOf(currentNewText.charAt(currentNewText.length()-1));
-
-                }
-
-                if(currentNewText.equals("0") || currentNewText.equals("-0")){
-                    Log.d(TAG, "onClick: singleZero/minusZero");
-                } else if(lastDigit.equals("0") && !Character.isDigit(currentNewText.charAt(currentNewText.length()-2))){
-                    Log.d(TAG, "onClick: zero after operand");
-                    if(String.valueOf(currentNewText.charAt(currentNewText.length()-2)).equals(".")){
-                        newNumber.append(b.getText().toString());
-                    }
-                } else {
-
+                if(new testInput(b.getText().toString(), newNumber.getText().toString()).getInputCheck()){
                     newNumber.append(b.getText().toString());
-                    String value = newNumber.getText().toString();
-                    try {
-
-                        Log.d(TAG, "onClick: attempting");
-                        result.setText(performOperation(value));
-                    } catch (NumberFormatException e) {
-                        Log.d(TAG, "onClick: catch");
+                    try{
+                        result.setText(new MyCalc(newNumber.getText().toString()).getFinalCalc());
+                    } catch(Exception e) {
+                        Log.d(TAG, "onClick: catching calculation error");
                     }
                 }
 
             }
         };
 
-
-        button0.setOnClickListener(zeroListener);
+        button0.setOnClickListener(Listener);
         button1.setOnClickListener(Listener);
         button2.setOnClickListener(Listener);
         button3.setOnClickListener(Listener);
@@ -139,47 +110,13 @@ public class MainActivity extends AppCompatActivity {
         button7.setOnClickListener(Listener);
         button8.setOnClickListener(Listener);
         button9.setOnClickListener(Listener);
+        buttonPlus.setOnClickListener(Listener);
+        buttonMinus.setOnClickListener(Listener);
+        buttonDivide.setOnClickListener(Listener);
+        buttonMultiply.setOnClickListener(Listener);
         buttonDecimal.setOnClickListener(Listener);
-
-
-        View.OnClickListener operationListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                Button b = (Button) v;
-                String op = b.getText().toString();
-
-                if(newNumber.getText().toString().length() == 0 && result.getText().toString().length() != 0){
-                    newNumber.setText(result.getText());
-                }
-
-
-
-                if(newNumber.getText().toString().length()==0){
-                    if (op.equals("-")){
-                        newNumber.append(op);
-                    }
-                } else {
-                    String lastDidgit = String.valueOf(newNumber.getText().toString().charAt(newNumber.length()-1));
-                    if (lastDidgit.equals("-") || lastDidgit.equals("+") || lastDidgit.equals("*") || lastDidgit.equals("/")) {
-                        Log.d(TAG, "onClick: duplicate op");
-                        if(op.equals("-")&& !lastDidgit.equals("-")){
-                            newNumber.append(op);
-                        }
-                        } else {
-                            newNumber.append(op);
-                    }
-                }
-
-
-            }
-        };
-
-        buttonDivide.setOnClickListener(operationListener);
-        buttonMinus.setOnClickListener(operationListener);
-        buttonMultiply.setOnClickListener(operationListener);
-        buttonPlus.setOnClickListener(operationListener);
+        buttonLbracket.setOnClickListener(Listener);
+        buttonRbracket.setOnClickListener(Listener);
 
 
         buttonEquals.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
 
                 newNumber.setText("");
+
+                Button b = (Button) v;
+                b.setBackgroundResource(R.drawable.pressed_white);
+
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(VIBE_LENGTH);
             }
         });
 
@@ -198,6 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
                 newNumber.setText("");
                 result.setText("");
+
+                Button b = (Button) v;
+                b.setBackgroundResource(R.drawable.pressed_orange);
+
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(VIBE_LENGTH);
+
 
             }
         };
@@ -214,18 +164,22 @@ public class MainActivity extends AppCompatActivity {
                     deleteLast.deleteCharAt(deleteLast.length()-1);
                     newNumber.setText(deleteLast.toString());
                     try{
-                        result.setText(performOperation(newNumber.getText().toString()));
+                        result.setText(new MyCalc(newNumber.getText().toString()).getFinalCalc());
                     } catch(Exception e) {
                         result.setText("");
                     }
                 }
 
+                Button b = (Button) v;
+                b.setBackgroundResource(R.drawable.pressed_orange);
+
+                Vibrator vibe = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(VIBE_LENGTH);
+
             }
         };
 
         buttonDel.setOnClickListener(delListener);
-
-
 
 
     }
@@ -246,177 +200,6 @@ public class MainActivity extends AppCompatActivity {
         newNumber.setText(savedInstanceState.getString(STATE_CALCULATION));
     }
 
-
-    private static String performOperation(String input) {
-        StringBuilder tempNumber = new StringBuilder();
-        ArrayList<Object> allElements = new ArrayList<>();
-
-
-        for (char element : input.toCharArray()) {
-
-            if(String.valueOf(element).equals("-")){
-                if(tempNumber.length()!=0){
-                    allElements.add(tempNumber);
-                    tempNumber = new StringBuilder();
-                }
-                allElements.add(element);
-            }else
-            if (Character.isDigit(element) || String.valueOf(element).equals(".")) {
-                tempNumber.append(element);
-            } else {
-                allElements.add(tempNumber);
-                allElements.add(element);
-                tempNumber = new StringBuilder();
-            }
-        }
-        allElements.add(tempNumber);
-
-// if "-" first change to "-digit"
-        if(allElements.get(0).toString().equals("-")){
-            String addedMinus = "-"+allElements.get(1);
-            allElements.set(0, addedMinus);
-            allElements.remove(1);
-        }
-
-
-// changing "-"digits after operands into "-digit"
-        for(int i=0; i < allElements.size(); i++) {
-            String element = allElements.get(i).toString();
-            if (element.equals("/")||element.equals("*")||element.equals("+")) {
-                if(allElements.get(i+1).toString().equals("-")){
-                    String addedMinus = "-"+allElements.get(i+2);
-                    allElements.set(i+1, addedMinus);
-                    allElements.remove(i+2);
-                }
-            }
-        }
-
-        System.out.println(allElements.toString());
-
-
-
-
-        for (int i = 0; i < allElements.size(); i++) {
-            String currentObj = allElements.get(i).toString();
-            if (currentObj.equals("*") || currentObj.equals("/") || currentObj.equals("+") || currentObj.equals("-")) {
-                if (allElements.get(i + 1).toString().equals("-")) {
-                    String tempNum = "-" + (allElements.get(i + 2).toString());
-                    allElements.set(i + 2, tempNum);
-                    allElements.remove(i + 1);
-                }
-            }
-        }
-
-        System.out.println(allElements.toString());
-
-
-
-        while (allElements.toString().contains("/")){
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("/")) {
-                    Double divideEquals = Double.valueOf(allElements.get(i - 1).toString()) / Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, divideEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-
-        }
-
-
-
-
-        while (allElements.toString().contains("*")) {
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("*")) {
-                    BigDecimal numOne = new BigDecimal(allElements.get(i-1).toString());
-                    BigDecimal numTwo = new BigDecimal(allElements.get(i+1).toString());
-                    BigDecimal multipyEquals = numOne.multiply(numTwo);
-                    allElements.set(i, multipyEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-        }
-
-
-        boolean minusTest = true;
-
-        while(minusTest){
-            minusTest = false;
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("-")) {
-                    Double minusEquals = Double.valueOf(allElements.get(i - 1).toString()) - Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, minusEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                    minusTest = true;
-                }
-            }
-        }
-
-
-
-
-        while (allElements.size() > 1) {
-            for (int i = 0; i < allElements.size(); i++) {
-                if (allElements.get(i).toString().equals("+")) {
-                    Double plusEquals = Double.valueOf(allElements.get(i - 1).toString()) + Double.valueOf(allElements.get(i + 1).toString());
-                    allElements.set(i, plusEquals);
-                    allElements.remove(i + 1);
-                    allElements.remove(i - 1);
-                }
-            }
-        }
-
-
-        String finalString = allElements.get(0).toString();
-
-        if(finalString.length() >0 && finalString.contains(".")){
-            for (int i = finalString.length()-1; i >=0; i--) {
-                if(String.valueOf(finalString.charAt(i)).equals("0")){
-                    Log.d(TAG, "performOperation: checking last digit");
-                } else if(String.valueOf(finalString.charAt(i)).equals(".")){
-                    finalString = finalString.substring(0,i);
-                    break;
-                } else {
-                    finalString = finalString.substring(0,i+1);
-                    break;
-                }
-
-            }
-        }
-
-        return finalString;
-
-
-
-//        if (lastTwoDigits.equals(".0")) {
-//            return finalString.substring(0, finalString.length() - 2);
-//
-//        } else {
-//            return finalString;
-//        }
-    }
-
-
-    private String findLastNumber(String number) {
-
-        StringBuilder lastNumber = new StringBuilder();
-
-        for(int i=number.length()-1; i >= 0; i--){
-            if (Character.isDigit(number.charAt(i)) || String.valueOf(number.charAt(i)).equals(".")){
-                lastNumber.append(number.charAt(i));
-                Log.d(TAG, "findLastNumber: checking " + i + " " + lastNumber);
-
-            } else {
-                break;
-            }
-
-
-        }
-        return lastNumber.toString();
-    }
 }
 
 
